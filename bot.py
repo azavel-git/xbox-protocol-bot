@@ -72,8 +72,9 @@ Ta personnalité et ta ligne éditoriale :
 
 
     # Boucle de sécurité anti-panne Gemini (3 tentatives)
+# Boucle de sécurité anti-panne Gemini robuste (5 tentatives)
     reponse_gemini = None
-    for tentative in range(3):
+    for tentative in range(5):  # <--- Passé de 3 à 5
         try:
             reponse_gemini = ai_client.models.generate_content(
                 model="gemini-2.5-flash",
@@ -84,17 +85,14 @@ Ta personnalité et ta ligne éditoriale :
             )
             break
         except Exception as e:
-            if "503" in str(e) or "demand" in str(e).lower():
-                print(f"⚠️ Serveur Gemini saturé (Tentative {tentative + 1}/3). Attente de 15s...")
-                time.sleep(15)
+            if "503" in str(e) or "demand" in str(e).lower() or "quota" in str(e).lower():
+                print(f"⚠️ Serveur Gemini saturé ou limite atteinte (Tentative {tentative + 1}/5). Attente de 30s...")
+                time.sleep(30)  # <--- Passé de 15s à 30s pour laisser le serveur souffler
             else:
                 raise e
 
     if not reponse_gemini:
-        raise Exception("Impossible de joindre Gemini après 3 tentatives.")
-
-    texte_du_post = reponse_gemini.text.strip()
-    print(f"\n--- 🤖 POST GÉNÉRÉ ---\n{texte_du_post}\n---------------------\n")
+        raise Exception("Impossible de joindre Gemini après 5 tentatives. Le serveur de Google est totalement indisponible.")
 
     # 5. ENVOI SUR BLUESKY
     print("🦋 Publication sur Bluesky...")
