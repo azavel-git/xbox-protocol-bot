@@ -19,8 +19,8 @@ if not all([BLUESKY_HANDLE, BLUESKY_PASSWORD, GEMINI_API_KEY]):
 try:
     # 2. CONNEXION AUX SERVICES
     bsky_client = Client()
-    bsky_client.login(thexboxprotocol.bsky.social, Falconz7794!7795!)
-    ai_client = genai.Client(api_key=AQ.Ab8RN6Jp14AUkURsRs49JjxjM9MfLf9hdwU5H1x0uolKlq5L_w)
+    bsky_client.login(BLUESKY_HANDLE, BLUESKY_PASSWORD)
+    ai_client = genai.Client(api_key=GEMINI_API_KEY)
 
     # 3. GÉNÉRATION DU TEXTE AVEC RECHERCHE EN DIRECT
     print("🌐 Gemini scanne Google Search pour trouver les dernières news Xbox...")
