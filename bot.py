@@ -48,7 +48,7 @@ Ton objectif est de générer de l'engagement sur Bluesky en proposant des news 
 
 ⚠️ INTERDICTION STRICTE DE RÉPÉTITION :
 Voici textuellement ton tout dernier post sur Bluesky : "{last_post_text}"
-Tu ne dois ABSOLUMENT PAS répéter les mêmes arguments, ni réutiliser les mêmes tournures de phrase. Propose une analyse différente ou une news sur un AUTRE sujet de l'actualité Xbox.
+Tu ne dois ABSOLUMENT PAS répéter les mêmes sujets, ni les mêmes arguments, ni réutiliser les mêmes tournures de phrase. Propose un post sur un AUTRE sujet de l'actualité Xbox.
 Ne t'éparpille pas sur 3 sujets différents dans le même post.
 
 Ta personnalité et ta ligne éditoriale :
