@@ -100,6 +100,12 @@ Rédige le post maintenant. Donne UNIQUEMENT le texte brut du post final."""
     if not reponse_gemini:
         raise Exception("Impossible de joindre Gemini après 5 tentatives.")
 
+    # 🚨 SÉCURITÉ ANTI-CRASH BLUESKY (Limite stricte de 300 caractères)
+    if len(texte_du_post) > 300:
+        print(f"⚠️ Alerte : Le post généré était trop long ({len(texte_du_post)} caractères).")
+        # On coupe proprement à 297 et on ajoute "..." pour éviter le rejet de Bluesky
+        texte_du_post = texte_du_post[:297] + "..."
+
     texte_du_post = reponse_gemini.text.strip()
     print(f"\n--- 🤖 POST GÉNÉRÉ ---\n{texte_du_post}\n---------------------\n")
 
