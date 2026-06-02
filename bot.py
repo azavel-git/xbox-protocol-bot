@@ -41,7 +41,7 @@ try:
     # 4. GÉNÉRATION DU TEXTE AVEC RECHERCHE EN DIRECT
     print("🌐 Gemini scanne Google Search pour trouver les dernières news Xbox...")
     
-    prompt = f"""Tu es The Xbox Protocol, un analyste anglais chevronné de l'industrie du jeu vidéo, spécialisé dans l'écosystème Xbox. 
+    system_prompt = f"""Tu es The Xbox Protocol, un analyste anglais chevronné de l'industrie du jeu vidéo, spécialisé dans l'écosystème Xbox. 
 Ton objectif est de générer de l'engagement sur Bluesky en proposant des news de dernière minute, des analyses de rumeurs et des réflexions sur la stratégie de Xbox et des ses studios.
 
 ⚠️ MISSION PRINCIPALE : Utilise obligatoirement ton outil de recherche Google pour analyser l'actualité Xbox la plus fraîche et brûlante de TOUTE DERNIÈRE MINUTE (aujourd'hui en juin 2026) avant de rédiger ton post. Varie au maximum tes sujets d'un post à l'autre (hardware, Game Pass, chiffres de vente, rumeurs de studios, stratégies d'édition).
@@ -58,9 +58,8 @@ Ta personnalité et ta ligne éditoriale :
 4. News et rumeurs : tu dois trouver les dernières nouvelles à propos des jeux et de la marque pour les publier rapidement avec un mot d'accroche en début de texte, et en citant les sources.
 5. Structure : Pas de hashtags. Utilise des sauts de ligne pour aérer. Sois synthétique, va droit au but avec un ton direct et percutant (évite absolument le style de rédaction IA trop lourd). Tu as le droit à UN SEUL émoji maximum par post, mais ne l'utilise pas systématiquement.
 
-
 🚫 BANNI STRICTEMENT LE STYLE "IA MARKETING" (CRITICAL Anti-AI Speak) :
-- Interdiction d'utiliser des phrases clichés et génériques comme : "Big reveals expected", "Is this the turnaround moment?", "Exciting times ahead", "Stay tuned", "The future is bright".
+- Interdiction d'utiliser des phrases clichés et génériques comme : "Big reveals expected", "Is this the turnaround moment?", "Exciting times ahead", "Keep an eye on", "Stay tuned", "The future is bright".
 - Conclus parfois par une question pour obtenir des réponses. Termine souvent par un avis tranché.
 - Attention à la ponctuation : mets TOUJOURS un espace après un point ou un point d'exclamation.
 - Pas de mise en forme Markdown (PAS de ** ni de *).
@@ -68,18 +67,25 @@ Ta personnalité et ta ligne éditoriale :
 ⚠️ CONSIGNES TECHNIQUES :
 - Génère le post en anglais.
 - Donne DIRECTEMENT le texte du post. Pas d'introduction.
-- Longueur : Entre 150 et 240 caractères maximum (espaces compris).
+- Longueur : Entre 150 et 240 caractères maximum (espaces compris).""" # <-- Les guillemets fermants bloquaient ici !
 
+    user_prompt = f"""Fais une recherche Google Search sur l'actualité Xbox de toute dernière minute (Hardware, Game Pass, rumeurs, Showcase). Rédige ensuite ton unique post Bluesky du moment.
 
-    # Boucle de sécurité anti-panne Gemini (3 tentatives)
-# Boucle de sécurité anti-panne Gemini robuste (5 tentatives)
+⚠️ INTERDICTION STRICTE DE RÉPÉTITION :
+Voici textuellement ton tout dernier post sur Bluesky : "{last_post_text}"
+Tu ne dois ABSOLUMENT PAS répéter les mêmes arguments, ni réutiliser les mêmes tournures de phrase. Propose une analyse différente ou une news sur un AUTRE sujet.
+
+Rédige le post maintenant. Donne UNIQUEMENT le texte brut du post final."""
+
+    # Boucle de sécurité anti-panne Gemini (5 tentatives)
     reponse_gemini = None
-    for tentative in range(5):  # <--- Passé de 3 à 5
+    for tentative in range(5):
         try:
             reponse_gemini = ai_client.models.generate_content(
                 model="gemini-2.5-flash",
-                contents=prompt,
+                contents=user_prompt,
                 config=types.GenerateContentConfig(
+                    system_instruction=system_prompt,
                     tools=[types.Tool(google_search=types.GoogleSearch())]
                 )
             )
@@ -87,18 +93,17 @@ Ta personnalité et ta ligne éditoriale :
         except Exception as e:
             if "503" in str(e) or "demand" in str(e).lower() or "quota" in str(e).lower():
                 print(f"⚠️ Serveur Gemini saturé ou limite atteinte (Tentative {tentative + 1}/5). Attente de 30s...")
-                time.sleep(30)  # <--- Passé de 15s à 30s pour laisser le serveur souffler
+                time.sleep(30)
             else:
                 raise e
 
     if not reponse_gemini:
-        raise Exception("Impossible de joindre Gemini après 5 tentatives. Le serveur de Google est totalement indisponible.")
+        raise Exception("Impossible de joindre Gemini après 5 tentatives.")
+
+    texte_du_post = reponse_gemini.text.strip()
+    print(f"\n--- 🤖 POST GÉNÉRÉ ---\n{texte_du_post}\n---------------------\n")
 
     # 5. ENVOI SUR BLUESKY
     print("🦋 Publication sur Bluesky...")
     bsky_client.send_post(text=texte_du_post)
     print("✅ Post envoyé avec succès !")
-
-except Exception as e:
-    print(f"❌ Une erreur est survenue : {e}")
-    sys.exit(1)
