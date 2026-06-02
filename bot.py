@@ -1,5 +1,6 @@
 import os
 import sys
+import random
 import time
 from atproto import Client
 from google import genai
