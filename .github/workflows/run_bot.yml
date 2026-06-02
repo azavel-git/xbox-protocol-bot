@@ -1,0 +1,32 @@
+name: Run Xbox Protocol Bot
+
+on:
+  schedule:
+    # Se déclenche 3 fois par jour aux horaires UTC calculés
+    - cron: '20 7 * * *'  # 9H20 Matin (Heure Française)
+    - cron: '0 15 * * *'  # 17H00 (Heure Française)
+    - cron: '0 21 * * *'  # 23H00 (Heure Française)
+  workflow_dispatch: # Garde le bouton pour le lancement manuel
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code du dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les bibliothèques
+        run: |
+          pip install atproto google-genai
+
+      - name: Exécuter le script du Bot
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python bot.py
