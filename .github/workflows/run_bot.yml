@@ -2,11 +2,10 @@ name: Run Xbox Protocol Bot
 
 on:
   schedule:
-    # Se déclenche 3 fois par jour aux horaires UTC calculés
-    - cron: '20 7 * * *'  # 9H20 Matin (Heure Française)
-    - cron: '0 15 * * *'  # 17H00 (Heure Française)
-    - cron: '0 21 * * *'  # 23H00 (Heure Française)
-  workflow_dispatch: # Garde le bouton pour le lancement manuel
+    - cron: '13 7 * * *'  # 7h13 UTC = 9h13 en France (Esquive le rush de 9h00/9h30)
+    - cron: '52 14 * * *' # 14h52 UTC = 16h52 en France (Esquive le rush de 17h00)
+    - cron: '41 20 * * *' # 20h41 UTC = 22h41 en France (Esquive le rush de 23h00)
+  workflow_dispatch:
 
 jobs:
   run-bot:
