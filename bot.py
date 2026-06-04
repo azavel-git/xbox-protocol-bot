@@ -73,10 +73,8 @@ Ta personnalité et ta ligne éditoriale :
     print("🔍 Analyse des discussions Xbox en cours sur Bluesky...")
     tendances_bsky = ""
     try:
-        # Augmentation de la limite à 20 posts pour avoir une vraie vue d'ensemble
         recherche_posts = bsky_client.app.bsky.feed.search_posts(q="xbox", limit=20)
         for post in recherche_posts.posts:
-            # On nettoie le texte pour éviter les sauts de ligne parasites
             texte_nettoye = post.record.text.replace('\n', ' ')
             tendances_bsky += f"- @{post.author.handle} a dit : {texte_nettoye}\n"
     except Exception as e:
@@ -84,15 +82,19 @@ Ta personnalité et ta ligne éditoriale :
         tendances_bsky = "Pas de données récentes disponibles sur Bluesky."
 
     # 2. DEFINITION DU PROMPT UTILISATEUR
-    user_prompt = f"""Regarde bien ton précédent post pour voir ce que tu as écrit : "{last_post_text}"
+    user_prompt = f"""Regarde ton précédent post pour ne pas bêtement le répéter : "{last_post_text}"
 
-Voici un échantillon des discussions récentes des utilisateurs de Bluesky au sujet de Xbox (analyse cette matière pour capter les vraies tendances, les débats ou les plaintes du moment) :
+Voici les dernières discussions sur Bluesky :
 {tendances_bsky}
 
-Fais une recherche Google Search ciblée pour compléter si besoin avec une actualité Xbox de toute dernière minute (juin 2026).
-🚨 CONTRAINTE ABSOLUE : Ton post doit porter sur un sujet COMPLETEMENT DIFFÉRENT de ton précédent post. Si ton dernier post parlait d'un jeu spécifique (comme Fable), force ta recherche Google sur du Hardware, une rumeur d'un autre studio, ou le Game Pass.
+🚨 RÈGLE D'OR ABSOLUE : UN SEUL ET UNIQUE SUJET.
+Interdiction totale de faire une liste, un résumé global, ou d'évoquer 2 ou 3 sujets différents. 
+Choisis UN SEUL angle précis, UNE SEULE news, ou UN SEUL débat (par exemple : UNIQUEMENT les specs d'une console, OU UNIQUEMENT les états d'âme sur un jeu précis, OU UNIQUEMENT une décision du Game Pass). Développe uniquement ce point unique.
 
-Rédige ensuite ton unique post Bluesky du moment selon tes instructions système. Réagis à chaud, sois percutant."""
+🚨 CONTRAINTE DE VARIÉTÉ :
+Ce sujet unique doit être RADICALEMENT DIFFÉRENT de ton précédent post. S'il parlait d'un jeu (comme Fable), interdiction d'évoquer un jeu. Traite du hardware, du business, ou des abonnements.
+
+Utilise Google Search (juin 2026) pour creuser ce sujet unique si besoin, puis rédige ton post Bluesky direct et tranché."""
 
     # 3. BOUCLE DE SÉCURITÉ ANTI-PANNE GEMINI (5 tentatives)
     reponse_gemini = None
@@ -104,14 +106,14 @@ Rédige ensuite ton unique post Bluesky du moment selon tes instructions systèm
                 config=types.GenerateContentConfig(
                     system_instruction=system_prompt,
                     tools=[types.Tool(google_search=types.GoogleSearch())],
-                    temperature=0.8,  # 🎲 Évite les répétitions robotiques
-                    top_p=0.95        # 📚 Vocabulaire plus riche
+                    temperature=0.85, # 🎲 Légèrement augmenté pour pousser le choix d'idées originales
+                    top_p=0.95
                 )
             )
             break
         except Exception as e:
             if "503" in str(e) or "demand" in str(e).lower() or "quota" in str(e).lower():
-                print(f"⚠️ Serveur Gemini saturé ou limite atteinte (Tentative {tentative + 1}/5). Attente de 30s...")
+                print(f"⚠️ Serveur Gemini saturé (Tentative {tentative + 1}/5). Attente de 30s...")
                 time.sleep(30)
             else:
                 raise e
@@ -132,3 +134,4 @@ Rédige ensuite ton unique post Bluesky du moment selon tes instructions systèm
     print("🦋 Publication sur Bluesky...")
     bsky_client.send_post(text=texte_du_post)
     print("✅ Post envoyé avec succès !")
+    
