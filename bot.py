@@ -7,7 +7,7 @@ from google import genai
 from google.genai import types
 
 print("🚀 Démarrage du bot The Xbox Protocol sur GitHub Actions...")
-delai = random.randint(1, 30)  # Tire au sort entre 1 et 60 minutes (modifie 60 par 90 si tu veux plus)
+delai = random.randint(1, 30)  # Tire au sort entre 1 et 30 minutes (modifie 60 par 90 si tu veux plus)
 print(f"⏳ Humanisation du post : pause aléatoire de {delai} minutes...")
 time.sleep(delai * 60)
 print("🔋 Fin de la pause ! Connexion aux services...")
