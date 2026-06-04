@@ -119,4 +119,3 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
     print("🦋 Publication sur Bluesky...")
     bsky_client.send_post(text=texte_du_post)
     print("✅ Post envoyé avec succès !")
-    
