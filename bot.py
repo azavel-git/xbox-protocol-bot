@@ -7,10 +7,18 @@ from google import genai
 from google.genai import types
 
 print("🚀 Démarrage du bot The Xbox Protocol sur GitHub Actions...")
-delai = random.randint(1, 30)  # Tire au sort entre 1 et 30 minutes
-print(f"⏳ Humanisation du post : pause aléatoire de {delai} minutes...")
-time.sleep(delai * 60)
-print("🔋 Fin de la pause ! Connexion aux services...")
+
+# GitHub Actions remplit automatiquement cette variable si tu cliques sur "Run workflow"
+est_manuel = os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
+
+if est_manuel:
+    print("⚡ Déclenchement manuel détecté : on passe direct à la suite sans attendre !")
+else:
+    delai = random.randint(1, 30)
+    print(f"⏳ Lancement programmé : pause aléatoire de {delai} minutes...")
+    time.sleep(delai * 60)
+
+print("🔋 Connexion aux services...")
 
 # 1. RÉCUPÉRATION DES SECRETS DE SÉCURITÉ
 BLUESKY_HANDLE = os.environ.get("BLUESKY_HANDLE")
