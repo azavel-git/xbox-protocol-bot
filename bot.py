@@ -96,12 +96,12 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
                 )
             )
             break
-        except Exception as e:
-            if "503" in str(e) or "demand" in str(e).lower() or "quota" in str(e).lower():
-                print(f"⚠️ Serveur Gemini saturé (Tentative {tentative + 1}/5). Attente de 30s...")
-                time.sleep(30)
-            else:
-                raise e
+            except Exception as e:
+                if "503" in str(e) or "demand" in str(e).lower() or "quota" in str(e).lower():
+                    print(f"⚠️ Serveur Gemini saturé (Tentative {tentative + 1}/5). Attente de 30s...")
+                    time.sleep(30)
+                else:
+                    raise e
 
     if not reponse_gemini:
         raise Exception("Impossible de joindre Gemini après 5 tentatives.")
