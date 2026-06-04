@@ -81,7 +81,7 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
 1. Utilise Google Search pour trouver des détails précis sur l'actualité Xbox (juin 2026) liés à l'angle imposé ci-dessus, si nécessaire.
 2. Rédige ton unique post Bluesky direct et percutant en respectant strictement l'angle imposé. N'évoque rien d'autre et ne te répète jamais par rapport au post à bannir."""
 
-    # 2. BOUCLE DE SÉCURITÉ ANTI-PANNE GEMINI (5 tentatives)
+# 2. BOUCLE DE SÉCURITÉ ANTI-PANNE GEMINI (5 tentatives)
     reponse_gemini = None
     for tentative in range(5):
         try:
