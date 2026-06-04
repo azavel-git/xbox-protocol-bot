@@ -2,13 +2,14 @@ import os
 import sys
 import random
 import time
-from atproto import Client
+import re
+from atproto import Client, models
 from google import genai
 from google.genai import types
 
 print("🚀 Démarrage du bot The Xbox Protocol sur GitHub Actions...")
 
-# GitHub Actions remplit automatiquement cette variable si tu cliques sur "Run workflow"
+# Détection du mode de lancement
 est_manuel = os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
 
 if est_manuel:
@@ -37,7 +38,7 @@ try:
     ai_client = genai.Client(api_key=GEMINI_API_KEY)
 
     # 3. RÉCUPÉRATION DU DERNIER POST POUR ÉVITER LA RÉPÉTITION
-    print("🔍 Récupération du dernier post Bluesky pour donner une mémoire au bot...")
+    print("🔍 Récupération du dernier post Bluesky...")
     last_post_text = ""
     try:
         feed = bsky_client.get_author_feed(actor=BLUESKY_HANDLE, limit=1)
@@ -45,7 +46,7 @@ try:
             last_post_text = feed.feed[0].post.record.text
             print(f"📝 Dernier post en date : '{last_post_text}'")
     except Exception as e:
-        print(f"⚠️ Impossible de lire le fil Bluesky (première utilisation ou bug) : {e}")
+        print(f"⚠️ Impossible de lire le fil Bluesky : {e}")
 
     # 4. GÉNÉRATION DU TEXTE AVEC RECHERCHE EN DIRECT
     angles_de_redaction = [
@@ -60,17 +61,17 @@ try:
     angle_du_jour = random.choice(angles_de_redaction)
 
     system_prompt = """Tu es The Xbox Protocol, un insider et analyste anglais chevronné du jeu vidéo, spécialisé dans l'écosystème Xbox. 
-Ton objectif est de générer de l'engagement sur Bluesky avec un ton mesuré, modérément enthousiaste, analytique et nuancé. Reste objectif, réfléchi mais captivant.
+Ton objectif est de générer de l'engagement sur Bluesky avec un ton mesuré, modérément enthousiaste, analytique et nuancé. Reste objectif et réfléchi.
 
 🚨 RÈGLES DE STRUCTURE ET DE VISIBILITÉ ABSOLUES : 
-1. ACCROCHE (THE HOOK) : Commence obligatoirement ton post par un mot-clé court en MAJUSCULES suivi de deux points (ex: ANALYSIS:, THOUGHTS:, FOCUS:, TREND:) ou une statistique impactante pour capter le regard dans le fil.
-2. MOTS-CLÉS PIVOTS (CUSTOM FEEDS) : Intègre obligatoirement et naturellement au moins un mot-clé majeur de l'écosystème (ex: Xbox, Game Pass, Microsoft, ou le nom exact d'un studio/jeu) pour que le post soit capté par les Custom Feeds thématiques de Bluesky.
-3. TIMING INTERNATIONAL : Écris pour une audience globale (US/UK). Bannis les salutations temporelles localisées (pas de "Good morning" ou "Tonight").
-4. HASHTAG UNIQUE : Ajoute exactement UN SEUL hashtag pertinent à la toute fin du post, directement lié au sujet (ex: #Xbox, #GamePass). Interdiction absolue d'en mettre plus d'un.
-5. FOCUS UNIQUE : Rédige ton post sur UN SEUL et UNIQUE sujet précis. Pas de listes, pas de résumés d'actualités croisées.
+1. ACCROCHE (THE HOOK) : Commence obligatoirement ton post par un mot-clé court en MAJUSCULES suivi de deux points (ex: ANALYSIS:, THOUGHTS:, FOCUS:, TREND:) pour capter le regard.
+2. MOTS-CLÉS PIVOTS : Intègre naturellement au moins un mot-clé majeur (Xbox, Game Pass, Microsoft, ou le nom exact d'un studio/jeu) pour les Custom Feeds.
+3. TIMING INTERNATIONAL : Écris pour une audience globale (US/UK). Pas de "Good morning" ou "Tonight".
+4. HASHTAG DE FIN STRICT : Ajoute exactement UN SEUL hashtag pertinent à la toute fin du post (ex: #Xbox, #GamePass). Écris-le collé, SANS ESPACE après le # (ex: #Xbox et JAMAIS # Xbox). Interdiction absolue d'en mettre plus d'un.
+5. FOCUS UNIQUE : Rédige ton post sur UN SEUL et UNIQUE sujet précis. Pas de listes.
 
 🚫 STYLE "IA MARKETING" BANNI :
-- Pas de phrases clichés ("Big reveals expected", "Is this the turnaround moment?", "Exciting times ahead", "Keep an eye on", "Stay tuned").
+- Pas de phrases clichés ("Big reveals expected", "Exciting times ahead", "Stay tuned").
 - Pas de mise en forme Markdown (PAS de ** ni de *).
 - Un seul émoji maximum dans tout le texte.
 - Longueur : Entre 150 et 260 caractères maximum (hashtag et espaces compris).
@@ -84,10 +85,10 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
 {angle_du_jour}
 
 [INSTRUCTIONS]
-1. Utilise Google Search pour trouver des détails précis sur l'actualité Xbox (juin 2026) liés à l'angle imposé ci-dessus, si nécessaire.
-2. Rédige ton unique post Bluesky nuancé et optimisé pour la visibilité en respectant strictement l'accroche en majuscules, les mots-clés pivots, et l'unique hashtag final."""
+1. Utilise Google Search pour trouver des détails précis sur l'actualité Xbox (juin 2026) liés à l'angle imposé.
+2. Rédige ton unique post Bluesky direct, nuancé, avec le hook en majuscules et l'unique hashtag attaché à la fin (ex: #Xbox)."""
 
-    # 5. BOUCLE DE SÉCURITÉ ANTI-PANNE GEMINI (5 tentatives)
+    # 5. BOUCLE DE SÉCURITÉ ANTI-PANNE GEMINI
     print("🌐 Gemini scanne Google Search pour trouver les dernières news Xbox...")
     reponse_gemini = None
     for tentative in range(5):
@@ -115,17 +116,33 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
 
     texte_du_post = reponse_gemini.text.strip()
 
-    # 🚨 SÉCURITÉ ANTI-CRASH BLUESKY (Limite stricte de 300 caractères)
+    # SÉCURITÉ ANTI-CRASH BLUESKY (Limite stricte de 300 caractères)
     if len(texte_du_post) > 300:
         print(f"⚠️ Alerte : Le post généré était trop long ({len(texte_du_post)} caractères).")
         texte_du_post = texte_du_post[:297] + "..."
         
     print(f"\n--- 🤖 POST GÉNÉRÉ ---\n{texte_du_post}\n---------------------\n")
 
-    # 6. ENVOI SUR BLUESKY
+    # 🔥 CONFIGURATION DYNAMIQUE DES FACETS (Pour rendre le hashtag cliquable et bleu)
+    facets = []
+    for match in re.finditer(r'#\w+', texte_du_post):
+        start_char, end_char = match.span()
+        # Encodage en UTF-8 pour calculer les positions exactes en octets (exigé par Bluesky)
+        start_byte = len(texte_du_post[:start_char].encode('utf-8'))
+        end_byte = len(texte_du_post[:end_char].encode('utf-8'))
+        tag_name = match.group()[1:]  # On extrait le mot sans le '#'
+        
+        facets.append(
+            models.AppBskyRichtextFacet.Main(
+                index=models.AppBskyRichtextFacet.ByteSlice(byte_start=start_byte, byte_end=end_byte),
+                features=[models.AppBskyRichtextFacet.Tag(tag=tag_name)]
+            )
+        )
+
+    # 6. ENVOI SUR BLUESKY WITH FACETS
     print("🦋 Publication sur Bluesky...")
-    bsky_client.send_post(text=texte_du_post)
-    print("✅ Post envoyé avec succès !")
+    bsky_client.send_post(text=texte_du_post, facets=facets)
+    print("✅ Post envoyé avec succès et hashtag activé !")
 
 except Exception as global_error:
     print(f"❌ Une erreur critique est survenue durant l'exécution : {global_error}")
