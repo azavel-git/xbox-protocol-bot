@@ -64,6 +64,7 @@ Interdiction absolue de faire des listes, de faire des résumés d'actualités c
 - Pas de hashtags. Un seul émoji maximum, sans automatisme.
 - Longueur : Entre 150 et 240 caractères maximum (espaces compris).
 - Langue : Anglais."""
+- Soit enthousiaste et nuancé dans tes analyses
 
     user_prompt = f"""[TON DERNIER POST À BANNIR]
 "{last_post_text}"
