@@ -41,16 +41,26 @@ try:
     # 4. GÉNÉRATION DU TEXTE AVEC RECHERCHE EN DIRECT
     print("🌐 Gemini scanne Google Search pour trouver les dernières news Xbox...")
 
+    import random
+
+    # Sélection aléatoire par Python pour saboter la tendance de l'IA à répéter les mêmes news
+    angles_de_redaction = [
+        "ANGLE IMPOSÉ : HARDWARE & ACCESSOIRES. Règle : Parle uniquement des fuites de la manette Elite Series 3 ou du pad dédié au Cloud. Interdiction absolue de mentionner un jeu, le Game Pass ou le Showcase de dimanche.",
+        "ANGLE IMPOSÉ : COMPÉTITION & RIVALITÉ. Règle : Analyse un mouvement de PlayStation (comme leur récent State of Play ou leurs exclusivités) ou de Nintendo, et comment Xbox doit contrer de manière agressive. Interdiction d'évoquer l'actu interne d'Xbox.",
+        "ANGLE IMPOSÉ : NOSTALGIE & REVIVAL. Règle : Parle des rumeurs de retour de franchises cultes (pitchs pour Banjo-Kazooie, licences de l'ère OG Xbox) pour les 25 ans de la marque. Interdiction de parler de Fable, de Gears ou du Showcase.",
+        "ANGLE IMPOSÉ : ZOOM INDÉ GAME PASS. Règle : Focus unique sur une pépite indé récente de la vague de juin (comme Solarpunk ou Beastro). Décris brièvement l'ambiance, le genre ou le gameplay du jeu (ex: jeu de gestion cozy, action exigeante, direction artistique pixel-art) pour donner du contexte. Interdiction d'évoquer les gros AAA comme Persona 5 ou Fable.",
+        "ANGLE IMPOSÉ : ATTENTE STUDIO. Règle : Spécule sur un projet précis et lointain d'un studio Xbox (ex: Clockwork Revolution de chez inXile, ou State of Decay 3). Interdiction de faire un résumé global ou de parler d'un autre sujet.",
+        "ANGLE IMPOSÉ : NEWS XBOX GÉNÉRALE. Règle : Utilise Google Search pour trouver la news générale Xbox la plus fraîche et incontournable de la semaine (juin 2026). Donne l'info brute de manière percutante avec ton avis critique immédiat. Reste à 100% sur ce fait unique.",
+        "ANGLE IMPOSÉ : DÉCLARATIONS DES DIRIGEANTS. Règle : Rebondis sur les dernières déclarations publiques, interviews ou mémos d'Asha Sharma (CEO Xbox) ou de Matt Booty. Décortique ce que leurs propos impliquent pour l'avenir de la marque ou des studios. Focus exclusif sur cette déclaration."
+    ]
+    angle_du_jour = random.choice(angles_de_redaction)
+
     system_prompt = f"""Tu es The Xbox Protocol, un insider et analyste anglais chevronné du jeu vidéo, spécialisé dans l'écosystème Xbox. 
 Ton objectif est de générer de l'engagement sur Bluesky avec un ton direct, tranché et passionné.
 
-⚖️ STRATÉGIE D'ALTERNANCE OBLIGATOIRE :
-Tu disposes de deux formats exclusifs. Tu dois impérativement ALTERNER entre eux d'un post à l'autre :
-1. FORMAT [BREAKING NEWS] : Tu rapportes une seule actualité brûlante (Hardware, Jeu, Game Pass) dénichée via Google Search (juin 2026), accompagnée de ton avis critique immédiat sur ce que ça apporte concrètement aux joueurs.
-2. FORMAT [STRATEGIC ANALYSIS] : Pas de news chaude ici. Tu prends du recul pour évoquer l'avenir d'un studio Xbox, spéculer sur un projet en cours, discret ou lointain, ou analyser un mouvement de la concurrence (Sony/Nintendo) et ce que ça change pour la communauté Xbox.
-
-🚨 RÈGLE DE STRUCTURE CRITIQUE : 
-Un SEUL sujet par post. Interdiction absolue de mélanger les deux formats, de faire des listes ou d'évoquer plusieurs thèmes/jeux différents. Pas de connecteurs de cumul (also, additionally, as well). Focus 100% sur une seule idée forte.
+🚨 RÈGLE DE STRUCTURE ABSOLUE : 
+Rédige ton post sur UN SEUL et UNIQUE sujet précis (une seule idée, une seule news ou une seule spéculation).
+Interdiction absolue de faire des listes, de faire des résumés d'actualités croisées ou de citer plus d'un jeu. Pas de connecteurs de cumul (also, additionally, as well). Focus 100% sur un seul angle incisif.
 
 🚫 STYLE "IA MARKETING" BANNI :
 - Pas de phrases clichés ("Big reveals expected", "Is this the turnaround moment?", "Exciting times ahead", "Keep an eye on", "Stay tuned", "The future is bright").
@@ -59,19 +69,17 @@ Un SEUL sujet par post. Interdiction absolue de mélanger les deux formats, de f
 - Longueur : Entre 150 et 240 caractères maximum (espaces compris).
 - Langue : Anglais."""
 
-    # 1. DEFINITION DU PROMPT UTILISATEUR (LOGIQUE D'ANALYSE D'ALTERNANCE)
-    user_prompt = f"""[TON DERNIER POST SUR BLUESKY]
+    # 1. DEFINITION DU PROMPT UTILISATEUR
+    user_prompt = f"""[TON DERNIER POST À BANNIR]
 "{last_post_text}"
 
-[CONSIGNES DE SÉLECTION DU FORMAT]
-1. Analyse objectivement ton dernier post ci-dessus. 
-2. Détermine son format : S'agissait-il d'une annonce de News/Date/Showcase, ou d'une Analyse de fond/Spéculation ?
-3. Choisis obligatoirement le FORMAT OPPOSÉ pour ton nouveau post :
-   - Si le dernier post était une News : Rédige une [STRATEGIC ANALYSIS] de fond (avenir d'un studio, projet en cours, concurrence) sans utiliser Google Search. Focus sur le point de vue des joueurs et l'intérêt des jeux.
-   - Si le dernier post était une Analyse : Utilise Google Search pour trouver une [BREAKING NEWS] de toute dernière minute (juin 2026) et balance l'info avec ton avis.
+[CONTRAINTE ÉDITORIALE IMPOSÉE PAR PYTHON]
+Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
+{angle_du_jour}
 
-🚨 CONTRAINTE DE VARIÉTÉ : 
-Interdiction absolue de parler du même jeu ou du même sujet que le post précédent. Change de cible à 100%. Rédige directement ton unique post Bluesky."""
+[INSTRUCTIONS]
+1. Utilise Google Search pour trouver des détails précis sur l'actualité Xbox (juin 2026) liés à l'angle imposé ci-dessus, si nécessaire.
+2. Rédige ton unique post Bluesky direct et percutant en respectant strictement l'angle imposé. N'évoque rien d'autre et ne te répète jamais par rapport au post à bannir."""
 
     # 2. BOUCLE DE SÉCURITÉ ANTI-PANNE GEMINI (5 tentatives)
     reponse_gemini = None
@@ -83,7 +91,7 @@ Interdiction absolue de parler du même jeu ou du même sujet que le post préc�
                 config=types.GenerateContentConfig(
                     system_instruction=system_prompt,
                     tools=[types.Tool(google_search=types.GoogleSearch())],
-                    temperature=0.8,
+                    temperature=0.85,
                     top_p=0.95
                 )
             )
