@@ -69,15 +69,32 @@ Ta personnalité et ta ligne éditoriale :
 - Donne DIRECTEMENT le texte du post. Pas d'introduction.
 - Longueur : Entre 150 et 240 caractères maximum (espaces compris).""" # <-- Les guillemets fermants bloquaient ici !
 
-    user_prompt = f"""Fais une recherche Google Search sur l'actualité Xbox de toute dernière minute (Hardware, Game Pass, rumeurs, Showcase). Rédige ensuite ton unique post Bluesky du moment.
+    # 1. RÉCUPÉRATION DES TENDANCES SUR BLUESKY
+    print("🔍 Analyse des discussions Xbox en cours sur Bluesky...")
+    tendances_bsky = ""
+    try:
+        # Augmentation de la limite à 20 posts pour avoir une vraie vue d'ensemble
+        recherche_posts = bsky_client.app.bsky.feed.search_posts(q="xbox", limit=20)
+        for post in recherche_posts.posts:
+            # On nettoie le texte pour éviter les sauts de ligne parasites
+            texte_nettoye = post.record.text.replace('\n', ' ')
+            tendances_bsky += f"- @{post.author.handle} a dit : {texte_nettoye}\n"
+    except Exception as e:
+        print(f"⚠️ Impossible de récupérer les tendances Bluesky ({e}). On passe outre.")
+        tendances_bsky = "Pas de données récentes disponibles sur Bluesky."
 
-⚠️ INTERDICTION STRICTE DE RÉPÉTITION :
-Voici textuellement ton tout dernier post sur Bluesky : "{last_post_text}"
-Tu ne dois ABSOLUMENT PAS répéter les mêmes arguments, ni réutiliser les mêmes tournures de phrase. Propose une analyse différente ou une news sur un AUTRE sujet.
+    # 2. DEFINITION DU PROMPT UTILISATEUR
+    user_prompt = f"""Regarde bien ton précédent post pour voir ce que tu as écrit : "{last_post_text}"
 
-Rédige le post maintenant. Donne UNIQUEMENT le texte brut du post final."""
+Voici un échantillon des discussions récentes des utilisateurs de Bluesky au sujet de Xbox (analyse cette matière pour capter les vraies tendances, les débats ou les plaintes du moment) :
+{tendances_bsky}
 
-    # Boucle de sécurité anti-panne Gemini (5 tentatives)
+Fais une recherche Google Search ciblée pour compléter si besoin avec une actualité Xbox de toute dernière minute (juin 2026).
+🚨 CONTRAINTE ABSOLUE : Ton post doit porter sur un sujet COMPLETEMENT DIFFÉRENT de ton précédent post. Si ton dernier post parlait d'un jeu spécifique (comme Fable), force ta recherche Google sur du Hardware, une rumeur d'un autre studio, ou le Game Pass.
+
+Rédige ensuite ton unique post Bluesky du moment selon tes instructions système. Réagis à chaud, sois percutant."""
+
+    # 3. BOUCLE DE SÉCURITÉ ANTI-PANNE GEMINI (5 tentatives)
     reponse_gemini = None
     for tentative in range(5):
         try:
@@ -86,7 +103,9 @@ Rédige le post maintenant. Donne UNIQUEMENT le texte brut du post final."""
                 contents=user_prompt,
                 config=types.GenerateContentConfig(
                     system_instruction=system_prompt,
-                    tools=[types.Tool(google_search=types.GoogleSearch())]
+                    tools=[types.Tool(google_search=types.GoogleSearch())],
+                    temperature=0.8,  # 🎲 Évite les répétitions robotiques
+                    top_p=0.95        # 📚 Vocabulaire plus riche
                 )
             )
             break
@@ -109,7 +128,7 @@ Rédige le post maintenant. Donne UNIQUEMENT le texte brut du post final."""
         
     print(f"\n--- 🤖 POST GÉNÉRÉ ---\n{texte_du_post}\n---------------------\n")
 
-    # 5. ENVOI SUR BLUESKY
+    # 4. ENVOI SUR BLUESKY
     print("🦋 Publication sur Bluesky...")
     bsky_client.send_post(text=texte_du_post)
     print("✅ Post envoyé avec succès !")
