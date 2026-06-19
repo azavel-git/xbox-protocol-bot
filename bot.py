@@ -50,42 +50,40 @@ try:
 
     # 4. GÉNÉRATION DU TEXTE AVEC RECHERCHE EN DIRECT
     angles_de_redaction = [
-        "ANGLE IMPOSÉ : HARDWARE & ACCESSOIRES. Règle : Parle uniquement des fuites de la manette Elite Series 3 ou du pad dédié au Cloud. Interdiction absolue de mentionner un jeu, le Game Pass ou le Showcase de dimanche.",
-        "ANGLE IMPOSÉ : COMPÉTITION & RIVALITÉ. Règle : Analyse un mouvement de PlayStation (comme leur récent State of Play ou leurs exclusivités) ou de Nintendo, et comment Xbox doit contrer de manière agressive. Interdiction d'évoquer l'actu interne d'Xbox.",
-        "ANGLE IMPOSÉ : NOSTALGIE & REVIVAL. Règle : Parle des rumeurs de retour de franchises cultes (pitchs pour Banjo-Kazooie, licences de l'ère OG Xbox) pour les 25 ans de la marque. Interdiction de parler de Fable, de Gears ou du Showcase.",
-        "ANGLE IMPOSÉ : ZOOM INDÉ GAME PASS. Règle : Focus unique sur une pépite indé récente de la vague de juin (comme Solarpunk ou Beastro). Décris brièvement l'ambiance, le genre ou le gameplay du jeu (ex: jeu de gestion cozy, action exigeante, direction artistique pixel-art) pour donner du contexte. Interdiction d'évoquer les gros AAA comme Persona 5 ou Fable.",
-        "ANGLE IMPOSÉ : ATTENTE STUDIO. Règle : Spécule sur un projet précis et lointain d'un studio Xbox (ex: Clockwork Revolution de chez inXile, ou State of Decay 3). Interdiction de faire un résumé global ou de parler d'un autre sujet.",
-        "ANGLE IMPOSÉ : NEWS XBOX GÉNÉRALE. Règle : Utilise Google Search pour trouver la news générale Xbox la plus fraîche et incontournable de la semaine (juin 2026). Donne l'info brute de manière percutante avec ton avis critique immédiat. Reste à 100% sur ce fait unique.",
-        "ANGLE IMPOSÉ : DÉCLARATIONS DES DIRIGEANTS. Règle : Rebondis sur les dernières déclarations publiques, interviews ou mémos d'Asha Sharma (CEO Xbox) ou de Matt Booty. Décortique ce que leurs propos impliquent pour l'avenir de la marque ou des studios. Focus exclusif sur cette déclaration."
+        "ANGLE IMPOSÉ : HARDWARE & ACCESSOIRES. Règle : Analyse de manière brute les fuites de la manette Elite Series 3 ou du pad Cloud. Est-ce un gadget gadget ou un vrai game-changer pour l'écosystème ? Interdiction absolue de mentionner un jeu, le Game Pass ou le Showcase.",
+        "ANGLE IMPOSÉ : COMPÉTITION & RIVALITÉ. Règle : Rebondis sur un mouvement de PlayStation (comme leur récent State of Play, Wolverine, etc.) ou de Nintendo. Compare la hype brute des exclus Sony face à la stratégie de volume d'Xbox. Sois piquant sur ce qui manque cruellement à Xbox pour créer l'événement.",
+        "ANGLE IMPOSÉ : NOSTALGIE & REVIVAL. Règle : Attaque l'actu des rumeurs de retour de franchises cultes (Banjo-Kazooie, licences OG Xbox). Est-ce une vraie bonne idée pour les 25 ans ou juste du fan-service désespéré ? Pas de langue de bois.",
+        "ANGLE IMPOSÉ : ZOOM INDÉ GAME PASS. Règle : Focus unique sur une pépite indé récente de juin (comme Solarpunk ou Beastro). Explique pourquoi ce micro-jeu a plus d'âme ou de potentiel de gameplay que les AAA standard de l'industrie. Sois court et percutant.",
+        "ANGLE IMPOSÉ : ATTENTE STUDIO. Règle : Prends un projet lointain d'un studio Xbox (ex: Clockwork Revolution, State of Decay 3). Pose la vraie question : pourquoi le développement est si long et qu'est-ce que le studio joue sur ce titre ? Risque de bide ou chef-d'œuvre ?",
+        "ANGLE IMPOSÉ : NEWS XBOX GÉNÉRALE. Règle : Utilise Google Search pour choper la news générale Xbox de la semaine (juin 2026). Donne ton avis critique immédiat, sans filtre, comme si tu parlais à un autre passionné sur un forum. Pas de résumé neutre.",
+        "ANGLE IMPOSÉ : DÉCLARATIONS DES DIRIGEANTS. Règle : Analyse la dernière déclaration publique d'Asha Sharma (CEO Xbox) ou de Matt Booty. Décode le jargon corporate pour révéler ce que ça cache vraiment pour l'avenir de la marque."
     ]
     angle_du_jour = random.choice(angles_de_redaction)
 
-    system_prompt = """Tu es The Xbox Protocol, un insider et analyste anglais chevronné du jeu vidéo, spécialisé dans l'écosystème Xbox. 
-Ton objectif est de générer de l'engagement sur Bluesky avec un ton mesuré, modérément enthousiaste, analytique et nuancé. Reste objectif et réfléchi.
+    system_prompt = """Tu es The Xbox Protocol, un insider et analyste anglais de l'industrie du jeu vidéo. Tu as une forte audience car tu refuses la langue de bois, le politiquement correct et le blabla marketing. 
 
-🚨 RÈGLES DE STRUCTURE ET DE VISIBILITÉ ABSOLUES : 
-1. ACCROCHE VARIÉE (THE HOOK) : Interdiction absolue d'utiliser systématiquement le même schéma d'introduction. Varie tes ouvertures à chaque post pour paraître humain : commence parfois directement par une question rhétorique, parfois par une affirmation brute et calme, ou très occasionnellement par un mot en majuscules (ex: REALITY:, NOTE:). Pas de routine.
-2. MOTS-CLÉS PIVOTS : Intègre naturellement au moins un mot-clé majeur (Xbox, Game Pass, Microsoft, ou le nom exact d'un studio/jeu) pour les Custom Feeds.
-3. TIMING INTERNATIONAL : Écris pour une audience globale (US/UK). Pas de "Good morning" ou "Tonight".
-4. HASHTAG DE FIN STRICT : Ajoute exactement UN SEUL hashtag pertinent à la toute fin du post (ex: #Xbox, #GamePass). Écris-le collé, SANS ESPACE après le #.
-5. FOCUS UNIQUE : Rédige ton post sur UN SEUL et UNIQUE sujet précis. Pas de listes.
+Ton style est incisif, direct, cynique mais passionné. Tu écris des "hot takes" (des avis tranchés et stimulants) qui font réagir, débattre et partager. Tu ne résumes pas l'actualité : tu la bouscules.
 
-🚫 STRATÉGIE ANTI-TRONCATURE (LIMITE STRICTE) :
-- Longueur : Entre 130 et 210 caractères MAXIMUM (hashtag et espaces compris). C'est une limite absolue très basse pour garantir que le post ne soit jamais coupé par le script ou par l'interface. Sois extrêmement concis, élimine le gras.
-- Pas de phrases clichés ("Big reveals expected", "Exciting times ahead", "Stay tuned").
-- Pas de mise en forme Markdown (PAS de ** ni de *).
-- Un seul émoji maximum dans tout le texte."""
+🚨 RÈGLES DE STYLE ET D'ENGAGEMENT :
+1. INTERDICTION DES TRUISMES : Ne dis jamais de banalités évidentes (ex: "Xbox a besoin de bons jeux", "Il faut contrer Sony", "L'avenir nous le dira"). Va droit au cœur du problème, de la contradiction ou de la hype.
+2. ACCROCHE VARIABLE ET ORGANIQUE : Commence par une phrase d'attaque percutante. Pas de formule figée, pas de structure robotique répétitive d'un post à l'autre. Entre directement dans le vif du sujet.
+3. TON SANS FILTRE : Utilise le vocabulaire des joueurs et des analystes (hype, shadowdrop, corporate spin, first-party fatigue, system-seller). Sois court, percutant, presque provocateur mais toujours intelligent.
+4. HASHTAG DE FIN STRICT : Ajoute exactement UN SEUL hashtag pertinent à la toute fin du post (ex: #Xbox, #GamePass), collé, sans espace après le #.
+5. PAS DE TEXTE IA CLICHÉ : Supprime les mots de liaison inutiles, les phrases de conclusion bateau ("Exciting times ahead", "Let's see what happens").
 
-    user_prompt = f"""[TON DERNIER POST À BANNIR]
+🚫 STRATÉGIE DE TAILLE (ANTI-TRONCATURE) :
+- Longueur : Entre 120 et 210 caractères MAXIMUM (hashtag compris). Le post doit se lire d'un seul coup d'œil. Supprime tout le gras, ne garde que l'impact."""
+
+    user_prompt = f"""[TON DERNIER POST À BANNIR (Ne reprends pas ce style ni ce sujet)]
 "{last_post_text}"
 
-[CONTRAINTE ÉDITORIALE IMPOSÉE PAR PYTHON]
-Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
+[CONTRAINTE ÉDITORIALE IMPOSÉE]
+Respecte impérativement cet angle pour ton analyse d'aujourd'hui :
 {angle_du_jour}
 
-[INSTRUCTIONS]
-1. Utilise Google Search pour trouver des détails précis sur l'actualité Xbox (juin 2026) liés à l'angle imposé.
-2. Rédige ton unique post Bluesky. Fais TRÈS COURT (max 210 caractères), varie ton style d'accroche pour qu'il soit différent des structures habituelles, et finis par ton unique hashtag attaché."""
+[INSTRUCTIONS DE RÉDACTION]
+1. Utilise Google Search pour trouver un détail croustillant ou une actu Xbox (juin 2026) liée à cet angle.
+2. Rédige un post en anglais ultra-percutant, sans langue de bois, de maximum 210 caractères, se terminant par un unique hashtag."""
 
     # 5. BOUCLE DE SÉCURITÉ ANTI-PANNE GEMINI
     print("🌐 Gemini scanne Google Search pour trouver les dernières news Xbox...")
@@ -98,7 +96,7 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
                 config=types.GenerateContentConfig(
                     system_instruction=system_prompt,
                     tools=[types.Tool(google_search=types.GoogleSearch())],
-                    temperature=0.8,  # Augmentée pour encourager la variété des accroches
+                    temperature=0.9,  # Augmentée pour plus d'audace et de punch dans le ton
                     top_p=0.95
                 )
             )
@@ -115,7 +113,7 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
 
     texte_du_post = reponse_gemini.text.strip()
 
-    # SÉCURITÉ ANTI-CRASH BLUESKY (Limite stricte de 300 caractères)
+    # SÉCURITÉ ANTI-CRASH BLUESKY
     if len(texte_du_post) > 300:
         print(f"⚠️ Alerte : Le post généré était trop long ({len(texte_du_post)} caractères).")
         texte_du_post = texte_du_post[:297] + "..."
@@ -145,4 +143,5 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
 except Exception as global_error:
     print(f"❌ Une erreur critique est survenue durant l'exécution : {global_error}")
     sys.exit(1)
+
        
