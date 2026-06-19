@@ -1,4 +1,4 @@
-import os
+  import os
 import sys
 import random
 import time
@@ -64,18 +64,17 @@ try:
 Ton objectif est de générer de l'engagement sur Bluesky avec un ton mesuré, modérément enthousiaste, analytique et nuancé. Reste objectif et réfléchi.
 
 🚨 RÈGLES DE STRUCTURE ET DE VISIBILITÉ ABSOLUES : 
-1. ACCROCHE (THE HOOK) : Commence obligatoirement ton post par un mot-clé court en MAJUSCULES suivi de deux points (ex: ANALYSIS:, THOUGHTS:, FOCUS:, TREND:) pour capter le regard.
+1. ACCROCHE VARIÉE (THE HOOK) : Interdiction absolue d'utiliser systématiquement le même schéma d'introduction. Varie tes ouvertures à chaque post pour paraître humain : commence parfois directement par une question rhétorique, parfois par une affirmation brute et calme, ou très occasionnellement par un mot en majuscules (ex: REALITY:, NOTE:). Pas de routine.
 2. MOTS-CLÉS PIVOTS : Intègre naturellement au moins un mot-clé majeur (Xbox, Game Pass, Microsoft, ou le nom exact d'un studio/jeu) pour les Custom Feeds.
 3. TIMING INTERNATIONAL : Écris pour une audience globale (US/UK). Pas de "Good morning" ou "Tonight".
-4. HASHTAG DE FIN STRICT : Ajoute exactement UN SEUL hashtag pertinent à la toute fin du post (ex: #Xbox, #GamePass). Écris-le collé, SANS ESPACE après le # (ex: #Xbox et JAMAIS # Xbox). Interdiction absolue d'en mettre plus d'un.
+4. HASHTAG DE FIN STRICT : Ajoute exactement UN SEUL hashtag pertinent à la toute fin du post (ex: #Xbox, #GamePass). Écris-le collé, SANS ESPACE après le #.
 5. FOCUS UNIQUE : Rédige ton post sur UN SEUL et UNIQUE sujet précis. Pas de listes.
 
-🚫 STYLE "IA MARKETING" BANNI :
+🚫 STRATÉGIE ANTI-TRONCATURE (LIMITE STRICTE) :
+- Longueur : Entre 130 et 210 caractères MAXIMUM (hashtag et espaces compris). C'est une limite absolue très basse pour garantir que le post ne soit jamais coupé par le script ou par l'interface. Sois extrêmement concis, élimine le gras.
 - Pas de phrases clichés ("Big reveals expected", "Exciting times ahead", "Stay tuned").
 - Pas de mise en forme Markdown (PAS de ** ni de *).
-- Un seul émoji maximum dans tout le texte.
-- Longueur : Entre 150 et 260 caractères maximum (hashtag et espaces compris).
-- Langue : Anglais."""
+- Un seul émoji maximum dans tout le texte."""
 
     user_prompt = f"""[TON DERNIER POST À BANNIR]
 "{last_post_text}"
@@ -86,7 +85,7 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
 
 [INSTRUCTIONS]
 1. Utilise Google Search pour trouver des détails précis sur l'actualité Xbox (juin 2026) liés à l'angle imposé.
-2. Rédige ton unique post Bluesky direct, nuancé, avec le hook en majuscules et l'unique hashtag attaché à la fin (ex: #Xbox)."""
+2. Rédige ton unique post Bluesky. Fais TRÈS COURT (max 210 caractères), varie ton style d'accroche pour qu'il soit différent des structures habituelles, et finis par ton unique hashtag attaché."""
 
     # 5. BOUCLE DE SÉCURITÉ ANTI-PANNE GEMINI
     print("🌐 Gemini scanne Google Search pour trouver les dernières news Xbox...")
@@ -99,7 +98,7 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
                 config=types.GenerateContentConfig(
                     system_instruction=system_prompt,
                     tools=[types.Tool(google_search=types.GoogleSearch())],
-                    temperature=0.75,
+                    temperature=0.8,  # Augmentée pour encourager la variété des accroches
                     top_p=0.95
                 )
             )
@@ -123,14 +122,13 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
         
     print(f"\n--- 🤖 POST GÉNÉRÉ ---\n{texte_du_post}\n---------------------\n")
 
-    # 🔥 CONFIGURATION DYNAMIQUE DES FACETS (Pour rendre le hashtag cliquable et bleu)
+    # 🔥 CONFIGURATION DYNAMIQUE DES FACETS
     facets = []
     for match in re.finditer(r'#\w+', texte_du_post):
         start_char, end_char = match.span()
-        # Encodage en UTF-8 pour calculer les positions exactes en octets (exigé par Bluesky)
         start_byte = len(texte_du_post[:start_char].encode('utf-8'))
         end_byte = len(texte_du_post[:end_char].encode('utf-8'))
-        tag_name = match.group()[1:]  # On extrait le mot sans le '#'
+        tag_name = match.group()[1:]
         
         facets.append(
             models.AppBskyRichtextFacet.Main(
@@ -147,3 +145,4 @@ Tu dois impérativement respecter cet angle et cette contrainte pour ce post :
 except Exception as global_error:
     print(f"❌ Une erreur critique est survenue durant l'exécution : {global_error}")
     sys.exit(1)
+       
